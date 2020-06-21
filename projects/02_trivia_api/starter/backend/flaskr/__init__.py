@@ -16,17 +16,34 @@ def create_app(test_config=None):
   '''
   @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
   '''
+  CORS(app, resources={r"*": {"origins": "*"}})
 
   '''
   @TODO: Use the after_request decorator to set Access-Control-Allow
   '''
+  @app.after_request
+  def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers','Content-Type, Authorization, True')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
+    return response
 
   '''
   @TODO: 
   Create an endpoint to handle GET requests 
   for all available categories.
   '''
-
+  @app.route('/categories', methods=['GET'])
+  def get_categories():
+    return jsonify({
+      'categories': {
+        1 : 'Science',
+        2 : 'Art',
+        3 : 'Geography',
+        4 : 'History'
+      },
+      'success': True
+    })
 
   '''
   @TODO: 
@@ -40,6 +57,26 @@ def create_app(test_config=None):
   ten questions per page and pagination at the bottom of the screen for three pages.
   Clicking on the page numbers should update the questions. 
   '''
+  @app.route('/questions', methods=['GET'])
+  def get_questions():
+    return jsonify({
+      'questions': [{
+        'id': 6,
+        'question': 'Test question1',
+        'answer': 'Test answer1',
+        'difficulty': 2,
+        'category': 1
+      }],
+      'total_questions': 5,
+      'categories': {
+        1 : 'Science',
+        2 : 'Art',
+        3 : 'Geography',
+        4 : 'History'
+      },
+      'current_category': 'History',
+      'success': True
+    })
 
   '''
   @TODO: 
@@ -48,6 +85,12 @@ def create_app(test_config=None):
   TEST: When you click the trash icon next to a question, the question will be removed.
   This removal will persist in the database and when you refresh the page. 
   '''
+  @app.route('/questions/<question_id>', methods=['DELETE'])
+  def delete_question(question_id):
+    return jsonify({
+      'success': True,
+      'id': question_id
+    })
 
   '''
   @TODO: 
@@ -59,6 +102,12 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.  
   '''
+  @app.route('/questions', methods=['POST'])
+  def add_question():
+    print('SL add_question() POST')
+    return jsonify({
+      'success': True
+    })
 
   '''
   @TODO: 
@@ -70,6 +119,20 @@ def create_app(test_config=None):
   only question that include that string within their question. 
   Try using the word "title" to start. 
   '''
+  @app.route('/questions/search', methods=['POST'])
+  def search_questions():
+    return jsonify({
+      'questions': [{
+        'id': 5,
+        'question': 'Whose autobiography....?',
+        'answer': 'Maya something',
+        'category': 'History',
+        'difficulty': 2
+      }],
+      'total_questions': 16,
+      'current_category': 2,
+      'success': True
+    })
 
   '''
   @TODO: 
@@ -79,7 +142,26 @@ def create_app(test_config=None):
   categories in the left column will cause only questions of that 
   category to be shown. 
   '''
-
+  @app.route('/categories/<category_id>/questions', methods=['GET'])
+  def get_by_category(category_id):
+    return jsonify({
+      'success': True,
+      'questions': [{
+        'id': 5,
+        'question': 'Whose autobiography....?',
+        'answer': 'Maya something',
+        'category': 'History',
+        'difficulty': 2
+      }, {
+        'id': 9,
+        'question': 'Whose autobiography....?',
+        'answer': 'Maya something',
+        'category': 'History',
+        'difficulty': 1
+      }],
+      'total_questions': 5,
+      'current_category': 'History'
+    })
 
   '''
   @TODO: 
@@ -92,6 +174,18 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
+  @app.route('/questions/quizzes', methods=['POST'])
+  def get_next_question():
+    return jsonify({
+      'question': {
+        'id': 9,
+        'question': 'Whose autobiography....?',
+        'answer': 'Maya something',
+        'category': 'History',
+        'difficulty': 1
+      },
+      'success': True
+    })
 
   '''
   @TODO: 
