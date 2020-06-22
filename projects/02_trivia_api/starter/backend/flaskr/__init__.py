@@ -1,4 +1,4 @@
-import os
+import os, json
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -74,7 +74,7 @@ def create_app(test_config=None):
         3 : 'Geography',
         4 : 'History'
       },
-      'current_category': 'History',
+      'current_category': 1,
       'success': True
     })
 
@@ -104,7 +104,9 @@ def create_app(test_config=None):
   '''
   @app.route('/questions', methods=['POST'])
   def add_question():
-    print('SL add_question() POST')
+    # print('SL add_question() POST')
+    dataDictionary = json.loads(request.data)
+    # print('SL add_qusestion() POST, Data: ' + str(dataDictionary))
     return jsonify({
       'success': True
     })
@@ -121,12 +123,15 @@ def create_app(test_config=None):
   '''
   @app.route('/questions/search', methods=['POST'])
   def search_questions():
+    #data = json.loads(request.data)
+    data = request.data
+    # print('SL search_questions() Data: ' + str(data.decode('utf-8')))
     return jsonify({
       'questions': [{
         'id': 5,
         'question': 'Whose autobiography....?',
         'answer': 'Maya something',
-        'category': 'History',
+        'category': 1,
         'difficulty': 2
       }],
       'total_questions': 16,
@@ -144,23 +149,24 @@ def create_app(test_config=None):
   '''
   @app.route('/categories/<category_id>/questions', methods=['GET'])
   def get_by_category(category_id):
+    # print('SL get_by_category category: ' + str(category_id))
     return jsonify({
       'success': True,
       'questions': [{
         'id': 5,
         'question': 'Whose autobiography....?',
         'answer': 'Maya something',
-        'category': 'History',
+        'category': 1,
         'difficulty': 2
       }, {
         'id': 9,
-        'question': 'Whose autobiography....?',
-        'answer': 'Maya something',
-        'category': 'History',
+        'question': 'Whose autobiography another....?',
+        'answer': 'Maya something2',
+        'category': 1,
         'difficulty': 1
       }],
       'total_questions': 5,
-      'current_category': 'History'
+      'current_category': 1
     })
 
   '''
