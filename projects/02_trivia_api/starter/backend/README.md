@@ -99,7 +99,8 @@ The API will return these error types when requests fail:
     - Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
 - Sample: `curl http://localhost:5000/categories`
 
-```{
+```
+{
     '1' : "Science",
     '2' : "Art",
     '3' : "Geography",
@@ -129,7 +130,8 @@ The API will return these error types when requests fail:
 
 - General:
 - Sample: `curl -X POST http://localhost:5000/questions/search`
-```{
+```
+{
   "current_category": 2, 
   "questions": [
     {
