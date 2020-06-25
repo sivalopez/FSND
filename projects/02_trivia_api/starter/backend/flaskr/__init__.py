@@ -104,12 +104,15 @@ def create_app(test_config=None):
   '''
   @app.route('/questions', methods=['POST'])
   def add_question():
-    # print('SL add_question() POST')
-    dataDictionary = json.loads(request.data)
-    # print('SL add_qusestion() POST, Data: ' + str(dataDictionary))
-    return jsonify({
-      'success': True
-    })
+    try:
+      # print('SL add_question() POST')
+      dataDictionary = json.loads(request.data)
+      print('SL add_qusestion() POST, Data: ' + str(dataDictionary))
+      return jsonify({
+        'success': True
+      })
+    except:
+      abort(422)
 
   '''
   @TODO: 
@@ -123,21 +126,24 @@ def create_app(test_config=None):
   '''
   @app.route('/questions/search', methods=['POST'])
   def search_questions():
-    #data = json.loads(request.data)
-    data = request.data
-    # print('SL search_questions() Data: ' + str(data.decode('utf-8')))
-    return jsonify({
-      'questions': [{
-        'id': 5,
-        'question': 'Whose autobiography....?',
-        'answer': 'Maya something',
-        'category': 1,
-        'difficulty': 2
-      }],
-      'total_questions': 16,
-      'current_category': 2,
-      'success': True
-    })
+    try: 
+      #data = json.loads(request.data)
+      data = request.data
+      # print('SL search_questions() Data: ' + str(data.decode('utf-8')))
+      return jsonify({
+        'questions': [{
+          'id': 5,
+          'question': 'Whose autobiography....?',
+          'answer': 'Maya something',
+          'category': 1,
+          'difficulty': 2
+        }],
+        'total_questions': 16,
+        'current_category': 2,
+        'success': True
+      })
+    except:
+      abort(405)
 
   '''
   @TODO: 
@@ -198,7 +204,38 @@ def create_app(test_config=None):
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
-  
+  @app.errorhandler(400)
+  def method_not_allowed(error):
+    return jsonify({
+      'success': False,
+      'error': 400,
+      'message': 'Bad Request'
+    }), 400
+
+  @app.errorhandler(404)
+  def method_not_allowed(error):
+    return jsonify({
+      'success': False,
+      'error': 404,
+      'message': 'Resource Not Found'
+    }), 404
+
+  @app.errorhandler(405)
+  def method_not_allowed(error):
+    return jsonify({
+      'success': False,
+      'error': 405,
+      'message': 'Method Not Allowed'
+    }), 405
+
+  @app.errorhandler(422)
+  def method_not_allowed(error):
+    return jsonify({
+      'success': False,
+      'error': 422,
+      'message': 'Not Processable'
+    }), 422
+
   return app
 
     
