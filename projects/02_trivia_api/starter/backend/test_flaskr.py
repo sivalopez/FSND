@@ -35,8 +35,8 @@ class TriviaTestCase(unittest.TestCase):
     """
     def test_get_categories(self):
         res = self.client().get('/categories')
-        print('SL test_get_categories REsponse: ' + str(res.data))
-        
+        # print('SL test_get_categories REsponse: ' + str(res.data))
+
         self.assertEqual(res.status_code, 200)
 
     def test_get_questions(self):
@@ -64,6 +64,21 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().get('/categories/{}/questions'.format(category))
         self.assertEqual(res.status_code, 200)
 
+    # def test_bad_request(self):
+    #     res = self.client().post('/questions')
+    #     self.assertEqual(res.status_code, 400)
+
+    def test_resource_not_found(self):
+        res = self.client().get('/category')
+        self.assertEqual(res.status_code, 404)
+
+    def test_method_not_allowed(self):
+        res = self.client().get('/questions/search')
+        self.assertEqual(res.status_code, 405)
+
+    def test_bad_request(self):
+        res = self.client().post('/questions')
+        self.assertEqual(res.status_code, 422)
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
