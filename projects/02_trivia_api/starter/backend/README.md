@@ -74,21 +74,39 @@ This README is missing documentation of your endpoints. Below is an example for 
 
 ## API Reference
 
-### Endpoints
+### Error Handling
 
-#### GET '/categories'
+Error are returned as JSON objects.
+- Sample:
 ```
-* General:
+{
+    "success": false,
+    "error": 405,
+    "message": "Method Not Allowed"
+}
+```
+The API will return these error types when requests fail:
+- 400: Bad Request
+- 404: Respource Not Found
+- 405: Method Not Allowed
+- 422: Not Processable
+
+### Endpoints
+#### GET /categories
+- General:
     - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
     - Request Arguments: None
     - Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-* Sample: $ curl http://localhost:5000/categories
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
+- Sample: `curl http://localhost:5000/categories`
+
+```{
+    '1' : "Science",
+    '2' : "Art",
+    '3' : "Geography",
+    '4' : "History",
+    '5' : "Entertainment",
+    '6' : "Sports"
+}
 
 ```
 
@@ -108,7 +126,23 @@ This README is missing documentation of your endpoints. Below is an example for 
 ```
 
 #### POST /questions/search
-```
+
+- General:
+- Sample: `curl -X POST http://localhost:5000/questions/search`
+```{
+  "current_category": 2, 
+  "questions": [
+    {
+      "answer": "Maya something", 
+      "category": 1, 
+      "difficulty": 2, 
+      "id": 5, 
+      "question": "Whose autobiography....?"
+    }
+  ], 
+  "success": true, 
+  "total_questions": 16
+}
 
 ```
 
