@@ -39,7 +39,6 @@ def create_app(test_config=None):
     return response
 
   '''
-  @TODO: 
   Create an endpoint to handle GET requests 
   for all available categories.
   '''
@@ -58,7 +57,6 @@ def create_app(test_config=None):
     })
 
   '''
-  @TODO: 
   Create an endpoint to handle GET requests for questions, 
   including pagination (every 10 questions). 
   This endpoint should return a list of questions, 
@@ -89,7 +87,6 @@ def create_app(test_config=None):
     })
 
   '''
-  @TODO: 
   Create an endpoint to DELETE question using a question ID. 
 
   TEST: When you click the trash icon next to a question, the question will be removed.
@@ -97,13 +94,20 @@ def create_app(test_config=None):
   '''
   @app.route('/questions/<question_id>', methods=['DELETE'])
   def delete_question(question_id):
+    question = Question.query.filter_by(id=question_id).first()
+    if question is None:
+      abort(404)  
+
+    print('SL delete_question() :' + str(question.format()))
+
+    question.delete()
+
     return jsonify({
       'success': True,
       'id': question_id
     })
 
   '''
-  @TODO: 
   Create an endpoint to POST a new question, 
   which will require the question and answer text, 
   category, and difficulty score.
@@ -119,8 +123,6 @@ def create_app(test_config=None):
       print(sys.exc_info())
       abort(404)
     
-    print('SL question from request: ' + str(data))
-    
     question = data.get('question', None)
     answer = data.get('answer', None)
     category = data.get('category', None)
@@ -134,10 +136,8 @@ def create_app(test_config=None):
       questionObj = Question(question = question,\
         answer = answer, category = category,\
           difficulty = difficulty)
-
       questionObj.insert()
 
-      # print('SL add_quesiton() - question id: ' + str(questionObj.id))
       return jsonify({
         'success': True,
         'id': questionObj.id
