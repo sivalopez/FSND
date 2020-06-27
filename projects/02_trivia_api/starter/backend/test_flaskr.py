@@ -32,10 +32,9 @@ class TriviaTestCase(unittest.TestCase):
     """
     TODO
     Write at least one test for each test for successful operation and for expected errors.
-    """
+    # """
     def test_get_categories(self):
         res = self.client().get('/categories')
-        print('SL test_get_categories REsponse: ' + str(res.data))
         self.assertEqual(res.status_code, 200)
 
     def test_get_questions(self):
@@ -43,13 +42,18 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
 
     def test_delete_question(self):
-        #TODO add a question and then delete.
-        res = self.client().delete('/questions/1')
+        #Add a question and then delete it.
+        newQuestion = {'question': 'What is the currency in Japan?',\
+            'answer': 'Japanese Yen', 'category': 3, 'difficulty': 1}
+        res = self.client().post('/questions', data=json.dumps(newQuestion),\
+            headers={'Content-Type': 'application/json'})
+        
+        res = self.client().delete('/questions/' + str(res.json['id']))
         self.assertEqual(res.status_code, 200)
 
     def test_add_question(self):
-        newQuestions = {'question': 'why this?', 'answer': 'Because I must', 'category': 2, 'difficulty': 3}
-        res = self.client().post('/questions', data=json.dumps(newQuestions), \
+        newQuestion = {'question': 'why this?', 'answer': 'Because I must', 'category': 2, 'difficulty': 3}
+        res = self.client().post('/questions', data=json.dumps(newQuestion), \
             headers={'Content-Type': 'application/json'})
         self.assertEqual(res.status_code, 200)
         # Assert that question is persisted by checking the id is present.
