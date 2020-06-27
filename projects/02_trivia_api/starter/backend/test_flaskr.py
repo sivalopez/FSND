@@ -44,7 +44,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
 
     def test_delete_question(self):
-        #add a question and then delete.
+        #TODO add a question and then delete.
         res = self.client().delete('/questions/1')
         self.assertEqual(res.status_code, 200)
 
@@ -64,6 +64,7 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().get('/categories/{}/questions'.format(category))
         self.assertEqual(res.status_code, 200)
 
+    # TODO
     # def test_bad_request(self):
     #     res = self.client().post('/questions')
     #     self.assertEqual(res.status_code, 400)
