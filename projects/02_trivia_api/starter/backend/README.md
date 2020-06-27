@@ -237,21 +237,38 @@ The API will return these error types when requests fail:
 #### POST /questions/search
 
 - General:
-- Sample: `curl -X POST http://localhost:5000/questions/search`
+    - Fetches questions based on the given search term.
+    - Request Arguments: data
+    - Returns A dictionary with a list of question objects, total questions, current category and success.
+- Sample: `curl -X POST http://localhost:5000/questions/search -H "Content-Type: application/json" -d '{"searchTerm": "WHO"}'`
 ```
 {
-  "current_category": 2, 
+  "current_category": null, 
   "questions": [
     {
-      "answer": "Maya something", 
-      "category": 1, 
+      "answer": "Maya Angelou", 
+      "category": 4, 
       "difficulty": 2, 
       "id": 5, 
-      "question": "Whose autobiography....?"
+      "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+    }, 
+    {
+      "answer": "George Washington Carver", 
+      "category": 4, 
+      "difficulty": 2, 
+      "id": 12, 
+      "question": "Who invented Peanut Butter?"
+    }, 
+    {
+      "answer": "Alexander Fleming", 
+      "category": 1, 
+      "difficulty": 3, 
+      "id": 21, 
+      "question": "Who discovered penicillin?"
     }
   ], 
   "success": true, 
-  "total_questions": 16
+  "total_questions": 3
 }
 
 ```
