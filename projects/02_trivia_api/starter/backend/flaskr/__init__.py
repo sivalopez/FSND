@@ -2,7 +2,7 @@ import os, json
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-import random
+import random, sys
 
 from models import setup_db, Question, Category
 
@@ -114,14 +114,36 @@ def create_app(test_config=None):
   '''
   @app.route('/questions', methods=['POST'])
   def add_question():
+    data = request.get_json()
+    if data is None:
+      print(sys.exc_info())
+      abort(404)
+    
+    print('SL question from request: ' + str(data))
+    
+    question = data.get('question', None)
+    answer = data.get('answer', None)
+    category = data.get('category', None)
+    difficulty = data.get('difficulty', None)
+
+    if question is None:
+      print(sys.exc_info())
+      abort(404)
+
     try:
-      # print('SL add_question() POST')
-      dataDictionary = json.loads(request.data)
-      # print('SL add_qusestion() POST, Data: ' + str(dataDictionary))
+      questionObj = Question(question = question,\
+        answer = answer, category = category,\
+          difficulty = difficulty)
+
+      questionObj.insert()
+
+      # print('SL add_quesiton() - question id: ' + str(questionObj.id))
       return jsonify({
-        'success': True
+        'success': True,
+        'id': questionObj.id
       })
     except:
+      print(sys.exc_info())
       abort(422)
 
   '''
