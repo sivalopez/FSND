@@ -147,7 +147,6 @@ def create_app(test_config=None):
       abort(422)
 
   '''
-  @TODO: 
   Create a POST endpoint to get questions based on a search term. 
   It should return any questions for whom the search term 
   is a substring of the question. 
@@ -158,24 +157,30 @@ def create_app(test_config=None):
   '''
   @app.route('/questions/search', methods=['POST'])
   def search_questions():
-    try: 
-      #data = json.loads(request.data)
-      data = request.data
-      # print('SL search_questions() Data: ' + str(data.decode('utf-8')))
+    data = request.get_json()
+    if data is None:
+      print(sys.exc_info())
+      abort(404)
+    
+    searchTerm = data['searchTerm']
+
+    try:
+      questions = Question.query.filter(Question.question.ilike('%' + searchTerm + '%')).all()
+      if not questions:
+        abort(404)
+
+      current_questions = paginate_questions(request, questions)
+      if len(current_questions) == 0:
+        abort(404)
+      
       return jsonify({
-        'questions': [{
-          'id': 5,
-          'question': 'Whose autobiography....?',
-          'answer': 'Maya something',
-          'category': 1,
-          'difficulty': 2
-        }],
-        'total_questions': 16,
-        'current_category': 2,
-        'success': True
+        'questions': current_questions,
+        'total_questions': len(questions),
+        'current_category': None,
+        'success': True,
       })
     except:
-      abort(405)
+      abort(422)
 
   '''
   @TODO: 
