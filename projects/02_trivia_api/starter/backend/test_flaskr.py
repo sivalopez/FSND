@@ -60,9 +60,12 @@ class TriviaTestCase(unittest.TestCase):
         self.assertIsNotNone(res.json['id'])
 
     def test_search_questions(self):
-        searchTerm = b'who'
-        res = self.client().post('/questions/search', data=searchTerm)
+        searchTerm = {'searchTerm': 'Who'}
+        res = self.client().post('/questions/search', data=json.dumps(searchTerm),\
+            headers={'Content-Type': 'application/json'})
         self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json['success'], True)
+        self.assertGreater(res.json['total_questions'], 1)
     
     def test_questions_by_category(self):
         category = 1
