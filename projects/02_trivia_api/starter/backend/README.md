@@ -101,12 +101,15 @@ The API will return these error types when requests fail:
 
 ```
 {
-    '1' : "Science",
-    '2' : "Art",
-    '3' : "Geography",
-    '4' : "History",
-    '5' : "Entertainment",
-    '6' : "Sports"
+  "categories": {
+    "1": "Science", 
+    "2": "Art", 
+    "3": "Geography", 
+    "4": "History", 
+    "5": "Entertainment", 
+    "6": "Sports"
+  }, 
+  "success": true
 }
 
 ```
