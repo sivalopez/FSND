@@ -77,7 +77,7 @@ This README is missing documentation of your endpoints. Below is an example for 
 ### Error Handling
 
 Error are returned as JSON objects.
-- Sample:
+- Sample: `curl -X POST http://localhost:5000/questions/37`
 ```
 {
     "success": false,
@@ -221,9 +221,17 @@ The API will return these error types when requests fail:
 }
 ```
 
-#### DELETE /questions/<question_id>
+#### DELETE /questions/{question_id}
+- General: 
+    - Deletes the question matching the given question_id.
+    - Request Arguments: None
+    - Returns: A dictionary with deleted question id and its value as well as success as true.
+- Sample: `curl -X DELETE http://localhost:5000/questions/37`
 ```
-
+{
+  "id": "37", 
+  "success": true
+}
 ```
 
 #### POST /questions/search
