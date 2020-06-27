@@ -45,13 +45,15 @@ def create_app(test_config=None):
   '''
   @app.route('/categories', methods=['GET'])
   def get_categories():
+    categories = Category.query.order_by(Category.id).all()
+
+    if len(categories) == 0:
+      abort(404)
+
+    formatted_categories = {category.id: category.type for category in categories}
+
     return jsonify({
-      'categories': {
-        1 : 'Science',
-        2 : 'Art',
-        3 : 'Geography',
-        4 : 'History'
-      },
+      'categories': formatted_categories,
       'success': True
     })
 
@@ -76,7 +78,7 @@ def create_app(test_config=None):
       abort(404)
 
     categories = Category.query.order_by(Category.id).all()
-    formatted_categories = [category.format() for category in categories]
+    formatted_categories = {category.id:category.type for category in categories}
 
     return jsonify({
       'questions': current_questions,
