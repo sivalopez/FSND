@@ -114,7 +114,7 @@ The API will return these error types when requests fail:
 
 ```
 
-#### GET '/questions'
+#### GET /questions
 - General:
     - Fetches a paginated list of questions in which each question is a dictionary of question, answer, category, difficulty and id.
     - Request Arguments: page
@@ -208,9 +208,17 @@ The API will return these error types when requests fail:
 }
 ```
 
-#### POST '/questions'
+#### POST /questions
+- General:
+    - Adds the new question with JSON data containing question, answer, category and difficulty score values and persists in the database.
+    - Request Arguments: data
+    - Returns: A dictionary with question id and its value as well as success as true.
+- Sample: `curl -H "Content-Type: application/json" -d '{"question": "Where is Opera House", "answer": "Sydney, Australia", "difficulty": 1, "category": 3}" -X POST http://localhost:5000/questions`
 ```
-
+{
+  "id": 32, 
+  "success": true
+}
 ```
 
 #### DELETE /questions/<question_id>
