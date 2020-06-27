@@ -35,8 +35,7 @@ class TriviaTestCase(unittest.TestCase):
     """
     def test_get_categories(self):
         res = self.client().get('/categories')
-        # print('SL test_get_categories REsponse: ' + str(res.data))
-
+        print('SL test_get_categories REsponse: ' + str(res.data))
         self.assertEqual(res.status_code, 200)
 
     def test_get_questions(self):
@@ -53,6 +52,8 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().post('/questions', data=json.dumps(newQuestions), \
             headers={'Content-Type': 'application/json'})
         self.assertEqual(res.status_code, 200)
+        # Assert that question is persisted by checking the id is present.
+        self.assertIsNotNone(res.json['id'])
 
     def test_search_questions(self):
         searchTerm = b'who'
@@ -64,10 +65,10 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().get('/categories/{}/questions'.format(category))
         self.assertEqual(res.status_code, 200)
 
-    # TODO
-    # def test_bad_request(self):
-    #     res = self.client().post('/questions')
-    #     self.assertEqual(res.status_code, 400)
+    def test_bad_request(self):
+        res = self.client().post('/questions', data="question=something&answer=theanswer",\
+            headers={'Content-Type': 'application/json'})
+        self.assertEqual(res.status_code, 400)
 
     def test_resource_not_found(self):
         res = self.client().get('/category')
@@ -77,9 +78,10 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().get('/questions/search')
         self.assertEqual(res.status_code, 405)
 
-    def test_bad_request(self):
-        res = self.client().post('/questions')
-        self.assertEqual(res.status_code, 422)
+    # def test_not_processable(self):
+    #     newQuestion = {'question': 'why this?', 'answer': 'Because I must', 'category': 2, 'difficulty': 3}
+    #     res = self.client().post('/questions', data=json.dumps(newQuestion))
+    #     self.assertEqual(res.status_code, 422)
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
