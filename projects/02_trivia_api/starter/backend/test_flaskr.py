@@ -68,9 +68,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertGreater(res.json['total_questions'], 1)
     
     def test_questions_by_category(self):
-        category = 1
+        category = 3
         res = self.client().get('/categories/{}/questions'.format(category))
         self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json['success'], True)
+        self.assertGreater(res.json['total_questions'], 1)
 
     def test_bad_request(self):
         res = self.client().post('/questions', data="question=something&answer=theanswer",\
