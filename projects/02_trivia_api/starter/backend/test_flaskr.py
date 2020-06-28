@@ -74,6 +74,18 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.json['success'], True)
         self.assertGreater(res.json['total_questions'], 1)
 
+    def test_get_next_question(self):
+        quizCriteria = {
+            "quiz_category": {"type": "Science", "id":"1"}, \
+                "previous_questions": [13]\
+                    }
+        res = self.client().post('/questions/quizzes', \
+            headers={'Content-Type': 'application/json'}, \
+                data=json.dumps(quizCriteria))
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json['success'], True)
+        self.assertGreater(len(res.json['question']), 0)
+
     def test_bad_request(self):
         res = self.client().post('/questions', data="question=something&answer=theanswer",\
             headers={'Content-Type': 'application/json'})
