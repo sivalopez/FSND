@@ -76,7 +76,7 @@ This README is missing documentation of your endpoints. Below is an example for 
 
 ### Error Handling
 
-Error are returned as JSON objects.
+Errors are returned as JSON objects.
 - Sample: `curl -X POST http://localhost:5000/questions/37`
 ```
 {
@@ -118,7 +118,7 @@ The API will return these error types when requests fail:
 - General:
     - Fetches a paginated list of questions in which each question is a dictionary of question, answer, category, difficulty and id.
     - Request Arguments: page
-    - Returns: An object with a list of question objects, number of total questions, current category and a dictionary of categories.
+    - Returns: An object with multiple keys with their values: categories, current_category, questions, total_questions and success. 
 - Sample: `curl http://localhost:5000/questions`
 ```
 {
