@@ -207,7 +207,6 @@ def create_app(test_config=None):
     except:
       abort(422)
   '''
-  @TODO: 
   Create a POST endpoint to get questions to play the quiz. 
   This endpoint should take category and previous question parameters 
   and return a random questions within the given category, 
@@ -219,14 +218,43 @@ def create_app(test_config=None):
   '''
   @app.route('/questions/quizzes', methods=['POST'])
   def get_next_question():
+    data = request.get_json()
+    if data is None:
+      abort(404)
+
+    # Get quiz_category from request data.
+    # If id is 0, then we need to include all categories.
+    quiz_category = data['quiz_category']['id']
+
+    # Fetch questions based on the selected quiz_category
+    if quiz_category == 0:
+      questions = Question.query.all()
+    else:
+      questions = Question.query.filter_by(category=quiz_category).all()
+
+    if questions is None:
+      abort(404)
+    
+    previous_questions = data['previous_questions']
+
+    # If previous questions length is the same as questions, then there are no more questions to get.
+    if len(questions) == len(previous_questions):
+      return jsonify({
+        'success': True
+      })
+
+    questionsSize = len(questions)
+    randomIndex = random.randrange(questionsSize)
+    next_question = questions[randomIndex]
+
+    if len(previous_questions) != 0:
+      for i in range(questionsSize): 
+        if next_question.id in previous_questions:
+          randomIndex = random.randrange(questionsSize)
+          next_question = questions[randomIndex]
+ 
     return jsonify({
-      'question': {
-        'id': 9,
-        'question': 'Whose autobiography....?',
-        'answer': 'Maya something',
-        'category': 'History',
-        'difficulty': 1
-      },
+      'question': next_question.format(),
       'success': True
     })
 
