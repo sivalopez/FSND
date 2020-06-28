@@ -97,15 +97,15 @@ def create_app(test_config=None):
     question = Question.query.filter_by(id=question_id).first()
     if question is None:
       abort(404)  
+    try:
+      question.delete()
 
-    print('SL delete_question() :' + str(question.format()))
-
-    question.delete()
-
-    return jsonify({
-      'success': True,
-      'id': question_id
-    })
+      return jsonify({
+        'success': True,
+        'id': question_id
+      })
+    except:
+      abort(422)
 
   '''
   Create an endpoint to POST a new question, 
@@ -235,31 +235,33 @@ def create_app(test_config=None):
     if questions is None:
       abort(404)
     
-    previous_questions = data['previous_questions']
+    try:
+      previous_questions = data['previous_questions']
 
-    # If previous questions length is the same as questions, then there are no more questions to get.
-    if len(questions) == len(previous_questions):
+      # If previous questions length is the same as questions, then there are no more questions to get.
+      if len(questions) == len(previous_questions):
+        return jsonify({
+          'success': True
+        })
+
+      questionsSize = len(questions)
+      randomIndex = random.randrange(questionsSize)
+      next_question = questions[randomIndex]
+
+      if len(previous_questions) != 0:
+        for i in range(questionsSize): 
+          if next_question.id in previous_questions:
+            randomIndex = random.randrange(questionsSize)
+            next_question = questions[randomIndex]
+  
       return jsonify({
+        'question': next_question.format(),
         'success': True
       })
-
-    questionsSize = len(questions)
-    randomIndex = random.randrange(questionsSize)
-    next_question = questions[randomIndex]
-
-    if len(previous_questions) != 0:
-      for i in range(questionsSize): 
-        if next_question.id in previous_questions:
-          randomIndex = random.randrange(questionsSize)
-          next_question = questions[randomIndex]
- 
-    return jsonify({
-      'question': next_question.format(),
-      'success': True
-    })
+    except:
+      abort(422)
 
   '''
-  @TODO: 
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
