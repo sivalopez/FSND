@@ -316,7 +316,25 @@ The API will return these error types when requests fail:
 }
 
 ```
+### POST /questions/quizzes
+- General
+    - Fetches a next question that is randomly selected from questions for the given category and that is not in previous questions list.
+    - Request arguments: data
+    - Returns: A dictionary of a question object and success.
+- Sample: `curl -H "Content-Type: application/json" -d '{"quiz_category": {"type": "Science","id":"1"}, "previous_questions": [13]}' -X POST http://localhost:5000/questions/quizzes`
+```
+{
+  "question": {
+    "answer": "Alexander Fleming", 
+    "category": 1, 
+    "difficulty": 3, 
+    "id": 21, 
+    "question": "Who discovered penicillin?"
+  }, 
+  "success": true
+}
 
+```
 ## Testing
 To run the tests, run
 ```
