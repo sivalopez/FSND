@@ -35,11 +35,17 @@ class TriviaTestCase(unittest.TestCase):
     # """
     def test_get_categories(self):
         res = self.client().get('/categories')
+        rjson = res.json
         self.assertEqual(res.status_code, 200)
+        self.assertEqual(rjson['success'], True)
+        self.assertGreater(len(rjson['categories']), 0)
 
     def test_get_questions(self):
         res = self.client().get('/questions')
+        rjson = res.json
         self.assertEqual(res.status_code, 200)
+        self.assertEqual(rjson['success'], True)
+        self.assertGreaterEqual(rjson['total_questions'], len(rjson['questions']))
 
     def test_delete_question(self):
         #Add a question and then delete it.
@@ -47,15 +53,18 @@ class TriviaTestCase(unittest.TestCase):
             'answer': 'Japanese Yen', 'category': 3, 'difficulty': 1}
         res = self.client().post('/questions', data=json.dumps(newQuestion),\
             headers={'Content-Type': 'application/json'})
-        
-        res = self.client().delete('/questions/' + str(res.json['id']))
-        self.assertEqual(res.status_code, 200)
+        del_res = self.client().delete('/questions/' + str(res.json['id']))
+        self.assertEqual(del_res.status_code, 200)
+        self.assertEqual(del_res.json['success'], True)
+        self.assertEqual(del_res.json['id'], str(res.json['id']))
+
 
     def test_add_question(self):
-        newQuestion = {'question': 'why this?', 'answer': 'Because I must', 'category': 2, 'difficulty': 3}
+        newQuestion = {'question': 'Where is Opera House?', 'answer': 'Sydney', 'category': 2, 'difficulty': 1}
         res = self.client().post('/questions', data=json.dumps(newQuestion), \
             headers={'Content-Type': 'application/json'})
         self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json['success'], True)
         # Assert that question is persisted by checking the id is present.
         self.assertIsNotNone(res.json['id'])
 
@@ -66,6 +75,30 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.json['success'], True)
         self.assertGreater(res.json['total_questions'], 1)
+
+    def test_search_questions_wrong_method(self):
+        searchTerm = {'searchTerm': 'Who'}
+        res = self.client().get('/questions/search', data=json.dumps(searchTerm),\
+            headers={'Content-Type': 'application/json'})
+        self.assertEqual(res.status_code, 405)
+        self.assertEqual(res.json['success'], False)
+        self.assertEqual(res.json['message'], 'Method Not Allowed')
+
+    def test_search_questions_error(self):
+        searchTerm = {'searchTerm': 'Who'}
+        res = self.client().post('/questions/search', \
+            headers={'Content-Type': 'application/json'})
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(res.json['success'], False)
+        self.assertEqual(res.json['message'], 'Bad Request')
+
+    def test_search_questions_not_found(self):
+        searchTerm = {'searchTerm': 'Siva'}
+        res = self.client().post('/questions/search', data=json.dumps(searchTerm),\
+            headers={'Content-Type': 'application/json'})
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(res.json['success'], False)
+        self.assertEqual(res.json['message'], 'Not Processable')
     
     def test_questions_by_category(self):
         category = 3
@@ -73,6 +106,13 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.json['success'], True)
         self.assertGreater(res.json['total_questions'], 1)
+
+    def test_questions_by_category_not_found(self):
+        category = 9
+        res = self.client().get('/categories/{}/questions'.format(category))
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(res.json['success'], False)
+        self.assertEqual(res.json['message'], 'Resource Not Found')
 
     def test_get_next_question(self):
         quizCriteria = {
@@ -99,10 +139,6 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().get('/questions/search')
         self.assertEqual(res.status_code, 405)
 
-    # def test_not_processable(self):
-    #     newQuestion = {'question': 'why this?', 'answer': 'Because I must', 'category': 2, 'difficulty': 3}
-    #     res = self.client().post('/questions', data=json.dumps(newQuestion))
-    #     self.assertEqual(res.status_code, 422)
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
