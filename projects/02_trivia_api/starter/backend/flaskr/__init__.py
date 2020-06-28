@@ -165,7 +165,7 @@ def create_app(test_config=None):
     searchTerm = data['searchTerm']
 
     try:
-      questions = Question.query.filter(Question.question.ilike('%' + searchTerm + '%')).all()
+      questions = Question.query.filter(Question.question.ilike('%' + searchTerm + '%')).order_by(Question.id).all()
       if not questions:
         abort(404)
 
@@ -183,7 +183,6 @@ def create_app(test_config=None):
       abort(422)
 
   '''
-  @TODO: 
   Create a GET endpoint to get questions based on category. 
 
   TEST: In the "List" tab / main screen, clicking on one of the 
@@ -192,26 +191,21 @@ def create_app(test_config=None):
   '''
   @app.route('/categories/<category_id>/questions', methods=['GET'])
   def get_by_category(category_id):
-    # print('SL get_by_category category: ' + str(category_id))
-    return jsonify({
-      'success': True,
-      'questions': [{
-        'id': 5,
-        'question': 'Whose autobiography....?',
-        'answer': 'Maya something',
-        'category': 1,
-        'difficulty': 2
-      }, {
-        'id': 9,
-        'question': 'Whose autobiography another....?',
-        'answer': 'Maya something2',
-        'category': 1,
-        'difficulty': 1
-      }],
-      'total_questions': 5,
-      'current_category': 1
-    })
+    questions = Question.query.filter_by(category=category_id).order_by(Question.id).all()
+    if len(questions) == 0:
+      abort(404)
+    
+    try:
+      current_questions = paginate_questions(request, questions)
 
+      return jsonify({
+        'success': True,
+        'questions': current_questions,
+        'total_questions': len(questions),
+        'current_category': category_id
+      })
+    except:
+      abort(422)
   '''
   @TODO: 
   Create a POST endpoint to get questions to play the quiz. 
