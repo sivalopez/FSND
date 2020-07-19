@@ -30,7 +30,18 @@ db_drop_and_create_all()
 @app.route('/drinks')
 def get_drinks():
     print('SL get_drinks() method.')
-    drinks = ["Chai","Mocca"]
+    drinks_list = Drink.query.all()
+    print('SL get_drinks() query result: ' + str(len(drinks_list)))
+
+    # If no drinks are found throw error 404.
+    if len(drinks_list) == 0:
+        abort(404)
+
+    drinks = []
+    for drink in drinks_list:
+        print('SL get_drinks() - drink.recipe: [' + str(drink.recipe) + ']')
+        drinks.append(drink.short())
+
     return jsonify({"success": True, "drinks": drinks})
 
 '''
@@ -44,14 +55,15 @@ def get_drinks():
 @app.route('/drinks-detail')
 def get_drinks_detail():
     print('SL get_drinks_detail() method.')
-    drinks = [{
-            'id': 1,
-            'title': 'Chai',
-            'recipe': [
-                {'color': '#CCDDFF', 'name': 'grey', 'parts': '2'},
-                {'color': '#8800FF', 'name': 'blue', 'parts': '1'}
-            ]
-        }]
+    drinks_list = Drink.query.all()
+
+    # If no drinks are found throw error 404.
+    if len(drinks_list) == 0:
+        abort(404)
+
+    drinks = []
+    for drink in drinks_list:
+        drinks.append(drink.long())
     return jsonify({"success": True, "drinks": drinks})
 
 '''
@@ -66,6 +78,11 @@ def get_drinks_detail():
 @app.route('/drinks', methods=['POST'])
 def create_drink():
     print('SL create_drink() method.')
+    data = request.get_json()
+    # If there is no data in the request throw 404 error.
+    if data is None:
+        abort(404)
+
     drink = [{
             'id': 1,
             'title': 'Chai',
@@ -87,9 +104,9 @@ def create_drink():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
-@app.route('/drinks', methods=['PATCH'])
-def edit_drink():
-    print('SL edit_drink()')
+@app.route('/drinks/<drink_id>', methods=['PATCH'])
+def edit_drink(drink_id):
+    print('SL edit_drink() drink_id: [' + drink_id + ']')
     drink = [{
         'id': 1,
         'title': 'Chai',
@@ -127,22 +144,21 @@ def unprocessable(error):
                     "message": "unprocessable"
                     }), 422
 
-'''
-@TODO implement error handlers using the @app.errorhandler(error) decorator
-    each error handler should return (with approprate messages):
-             jsonify({
-                    "success": False, 
-                    "error": 404,
-                    "message": "resource not found"
-                    }), 404
+@app.errorhandler(404)
+def resource_not_found(error):
+    return jsonify({                    
+        "success": False, 
+        "error": 404,
+        "message": "resource not found"
+    }), 404  
 
-'''
-
-'''
-@TODO implement error handler for 404
-    error handler should conform to general task above 
-'''
-
+@app.errorhandler(500)
+def resource_not_found(error):
+    return jsonify({                    
+        "success": False, 
+        "error": 500,
+        "message": "internal server error"
+    }), 500 
 
 '''
 @TODO implement error handler for AuthError
