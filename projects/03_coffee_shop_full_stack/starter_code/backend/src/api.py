@@ -1,4 +1,5 @@
 import os
+import sys
 from flask import Flask, request, jsonify, abort
 from sqlalchemy import exc
 import json
@@ -37,10 +38,13 @@ def get_drinks():
     if len(drinks_list) == 0:
         abort(404)
 
-    drinks = []
-    for drink in drinks_list:
-        print('SL get_drinks() - drink.recipe: [' + str(drink.recipe) + ']')
-        drinks.append(drink.short())
+    try:
+        drinks = []
+        for drink in drinks_list:
+            drinks.append(drink.short())
+    except:
+        print(sys.exc_info())
+        abort(422)
 
     return jsonify({"success": True, "drinks": drinks})
 
@@ -82,16 +86,26 @@ def create_drink():
     # If there is no data in the request throw 404 error.
     if data is None:
         abort(404)
+    
+    title = data.get('title', None)
+    recipe = data.get('recipe', None)
 
-    drink = [{
-            'id': 1,
-            'title': 'Chai',
-            'recipe': [
-                {'color': '#CCDDFF', 'name': 'grey', 'parts': '2'},
-                {'color': '#8800FF', 'name': 'blue', 'parts': '1'}
-            ]
-        }]
-    return jsonify({"success": True, "drinks": drink})
+    if title is None:
+        abort(404)
+
+    if recipe is None:
+        abort(404)
+
+    try:
+        drink = Drink(title=title, recipe=json.dumps(recipe))
+        drink.insert()
+        return jsonify({
+            "success": True,
+            "drinks": drink.long()
+        })
+    except:
+        print(sys.exc_info())
+        abort(422)
 
 '''
 @TODO implement endpoint
@@ -107,15 +121,27 @@ def create_drink():
 @app.route('/drinks/<drink_id>', methods=['PATCH'])
 def edit_drink(drink_id):
     print('SL edit_drink() drink_id: [' + drink_id + ']')
-    drink = [{
-        'id': 1,
-        'title': 'Chai',
-        'recipe': [
-            {'color': '#CCDDFF', 'name': 'grey', 'parts': '2'},
-            {'color': '#8800FF', 'name': 'blue', 'parts': '1'}
-        ]
-    }]
-    return jsonify({"success": True, "drinks": drink})
+
+    data = request.get_json()
+    print('SL edit_drink() data: ' + str(data))
+    title = data.get('title', None)
+    recipe = data.get('recipe', None)
+
+    if drink_id is None:
+        abort(404)
+
+    drink = Drink.query.filter_by(id=drink_id).one_or_none()
+    if drink is None:
+        abort(404)
+
+    try:
+        drink.title = title
+        drink.recipe = json.dumps(recipe)
+        drink.update()
+    except:
+        abort(422)
+    
+    return jsonify({"success": True, "drinks": [drink.long()]})
 
 '''
 @TODO implement endpoint
@@ -130,6 +156,19 @@ def edit_drink(drink_id):
 @app.route('/drinks/<drink_id>', methods=['DELETE'])
 def delete_drink(drink_id):
     print('SL delete_drink() method for drink_id: [' + drink_id + ']')
+
+    if drink_id is None:
+        abort(404)
+    
+    drink = Drink.query.filter_by(id=drink_id).one_or_none()
+    if drink is None:
+        abort(404)
+
+    try:
+        drink.delete()
+    except:
+        abort(422)
+
     return jsonify({"success": True, "delete": 2})
 
 ## Error Handling
@@ -139,10 +178,10 @@ Example error handling for unprocessable entity
 @app.errorhandler(422)
 def unprocessable(error):
     return jsonify({
-                    "success": False, 
-                    "error": 422,
-                    "message": "unprocessable"
-                    }), 422
+        "success": False, 
+        "error": 422,
+        "message": "unprocessable"
+    }), 422
 
 @app.errorhandler(404)
 def resource_not_found(error):
