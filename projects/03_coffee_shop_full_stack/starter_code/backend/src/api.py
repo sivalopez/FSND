@@ -32,7 +32,6 @@ db_drop_and_create_all()
 def get_drinks():
     print('SL get_drinks() method.')
     drinks_list = Drink.query.all()
-    print('SL get_drinks() query result: ' + str(len(drinks_list)))
 
     # If no drinks are found throw error 404.
     if len(drinks_list) == 0:
@@ -57,7 +56,8 @@ def get_drinks():
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks-detail')
-def get_drinks_detail():
+@requires_auth('get:drinks-detail')
+def get_drinks_detail(payload):
     print('SL get_drinks_detail() method.')
     drinks_list = Drink.query.all()
 
@@ -172,9 +172,6 @@ def delete_drink(drink_id):
     return jsonify({"success": True, "delete": 2})
 
 ## Error Handling
-'''
-Example error handling for unprocessable entity
-'''
 @app.errorhandler(422)
 def unprocessable(error):
     return jsonify({
@@ -203,3 +200,10 @@ def resource_not_found(error):
 @TODO implement error handler for AuthError
     error handler should conform to general task above 
 '''
+@app.errorhandler(AuthError)
+def auth_error(authError):
+    return jsonify({
+        "success": False,
+        "error": authError.status_code,
+        "message": authError.error['code']
+    }), 401
