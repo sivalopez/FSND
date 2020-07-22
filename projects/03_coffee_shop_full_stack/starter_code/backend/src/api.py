@@ -80,7 +80,8 @@ def get_drinks_detail(payload):
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks', methods=['POST'])
-def create_drink():
+@requires_auth('post:drinks')
+def create_drink(payload):
     print('SL create_drink() method.')
     data = request.get_json()
     # If there is no data in the request throw 404 error.
@@ -119,7 +120,8 @@ def create_drink():
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks/<drink_id>', methods=['PATCH'])
-def edit_drink(drink_id):
+@requires_auth('patch:drinks')
+def edit_drink(payload, drink_id):
     print('SL edit_drink() drink_id: [' + drink_id + ']')
 
     data = request.get_json()
@@ -154,7 +156,8 @@ def edit_drink(drink_id):
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks/<drink_id>', methods=['DELETE'])
-def delete_drink(drink_id):
+@requires_auth('delete:drinks')
+def delete_drink(payload, drink_id):
     print('SL delete_drink() method for drink_id: [' + drink_id + ']')
 
     if drink_id is None:
@@ -204,6 +207,6 @@ def resource_not_found(error):
 def auth_error(authError):
     return jsonify({
         "success": False,
-        "error": authError.status_code,
-        "message": authError.error['code']
-    }), 401
+        "error": authError.error['code'],
+        "message": authError.error['description']
+    }), authError.status_code
