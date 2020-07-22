@@ -11,21 +11,33 @@
     <form (ngSubmit)="logForm()">
       <ion-item>
         <ion-label>Drink Title</ion-label>
-        <ion-input type="text" [(ngModel)]="drink.title" name="title"></ion-input>
+        <ion-input 
+          [readonly]="!auth.can('patch:drinks')" 
+          type="text" [(ngModel)]="drink.title" name="title"></ion-input>
       </ion-item>
 
       <ion-item *ngFor="let ingredient of drink.recipe; let i = index;  trackBy: customTrackBy">
         <ion-label>Ingredient Name</ion-label>
-        <ion-input [(ngModel)]="drink.recipe[i].name" [name]="'Ingredient Title'+i"></ion-input>
+        <ion-input 
+          [readonly]="!auth.can('patch:drinks')" 
+          [(ngModel)]="drink.recipe[i].name" [name]="'Ingredient Title'+i"></ion-input>
 
         <ion-label>Number of Parts</ion-label>
-        <ion-input type="number" [(ngModel)]="drink.recipe[i].parts" [name]="'Ingredient Parts'+i"></ion-input>
+        <ion-input 
+          [readonly]="!auth.can('patch:drinks')" 
+          type="number" [(ngModel)]="drink.recipe[i].parts" [name]="'Ingredient Parts'+i"></ion-input>
 
         <ion-label>Color</ion-label>
-        <ion-input type="text" [(ngModel)]="drink.recipe[i].color" [name]="'Ingredient Color'+i"></ion-input>
+        <ion-input 
+          [readonly]="!auth.can('patch:drinks')" 
+          type="text" [(ngModel)]="drink.recipe[i].color" [name]="'Ingredient Color'+i"></ion-input>
 
-        <ion-button (click)="removeIngredient(i)" [disabled]="i==0 && drink.recipe.length==1">Remove</ion-button><br />
-        <ion-button (click)="addIngredient(i)" [disabled]="drink.recipe.length==5">ADD</ion-button><br />
+        <ion-button 
+          [disabled]="!auth.can('patch:drinks')" 
+          (click)="removeIngredient(i)" [disabled]="i==0 && drink.recipe.length==1">Remove</ion-button><br />
+        <ion-button
+          [disabled]="!auth.can('patch:drinks')" 
+          (click)="addIngredient(i)" [disabled]="drink.recipe.length==5">ADD</ion-button><br />
 
       </ion-item>
 
