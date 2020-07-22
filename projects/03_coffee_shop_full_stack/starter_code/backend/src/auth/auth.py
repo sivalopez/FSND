@@ -82,6 +82,7 @@ def check_permissions(permission, payload):
             'description': 'Authorization header must include permissions.'
         }, 401)
     # Check that requested permission is in the payload.
+    # 403 error code is appropriate for authorization errors.
     elif permission not in payload['permissions']:
         raise AuthError({
             'code': 'unauthorized_request',
